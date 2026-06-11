@@ -1,0 +1,21 @@
+# Dependências
+node_modules/
+
+# Ambiente local (nunca versionar segredos)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistemas operacionais
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.user

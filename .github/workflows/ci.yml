@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    name: Lint & Estrutura
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar arquivos obrigatórios
+        run: |
+          for f in \
+            index.html \
+            marcas.html \
+            modelos.html \
+            veiculos.html \
+            js/utils/dom.js \
+            js/utils/validation.js \
+            js/services/apiClient.js \
+            js/services/config.js; do
+            [ -f "$f" ] || { echo "Arquivo ausente: $f"; exit 1; }
+          done
+          echo "Todos os arquivos obrigatórios presentes."
+
+      - name: Verificar ausência de secrets hardcoded
+        run: |
+          if grep -rE "(api_key|apikey|secret|password|token)\s*=\s*['\"][^'\"]{8,}" \
+               js/ --include="*.js" -i; then
+            echo "Possível secret hardcoded detectado."
+            exit 1
+          fi
+          echo "Nenhum secret óbvio encontrado."
